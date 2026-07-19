@@ -1,0 +1,24 @@
+# Binaries
+/plug-scaffold
+/plug-scaffold.exe
+dist/
+
+# Coverage output (generated)
+coverage/
+*.html
+
+# Go build cache
+*.test
+*.out
+
+# Editor
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# macOS
+.DS_Store
+
+# Multi-session work tracker (per user CLAUDE.md convention)
+TODO.md
