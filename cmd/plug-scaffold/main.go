@@ -24,6 +24,7 @@ per opinionated style — that passes plug-audit cleanly out of the box.`,
 	}
 
 	root.AddCommand(
+		commands.NewNewCmd(),
 		commands.NewVersionCmd(version),
 	)
 
