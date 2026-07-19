@@ -23,6 +23,13 @@ type PluginSpec struct {
 	// convention is a distribution suffix, not part of the module path.
 	ModuleName string
 
+	// ModuleIdent is a snake_case identifier safe to use in Vim
+	// variable names (e.g. vim.g.loaded_<ident>) and Lua identifier
+	// contexts. Derived from ModuleName by replacing "-" with "_".
+	// Neovim's own convention: `vim.g.loaded_gitsigns`, not
+	// `vim.g.loaded_git-signs`.
+	ModuleIdent string
+
 	// Author is the free-form author-attribution string. Emitted verbatim
 	// into LICENSE and README.
 	Author string
@@ -75,12 +82,14 @@ func NewPluginSpec(repoName, author, org string, style Style) (PluginSpec, error
 		return PluginSpec{}, err
 	}
 
+	moduleName := deriveModuleName(repoName)
 	return PluginSpec{
-		RepoName:   repoName,
-		ModuleName: deriveModuleName(repoName),
-		Author:     author,
-		Org:        org,
-		Style:      style,
+		RepoName:    repoName,
+		ModuleName:  moduleName,
+		ModuleIdent: deriveModuleIdent(moduleName),
+		Author:      author,
+		Org:         org,
+		Style:       style,
 	}, nil
 }
 
@@ -90,4 +99,11 @@ func NewPluginSpec(repoName, author, org string, style Style) (PluginSpec, error
 // take any string.
 func deriveModuleName(repoName string) string {
 	return strings.TrimSuffix(repoName, ".nvim")
+}
+
+// deriveModuleIdent turns a module name into a snake_case identifier
+// safe for Vim variable names. Only "-" needs translation — module
+// names are already lowercase-ascii per repoNamePattern.
+func deriveModuleIdent(moduleName string) string {
+	return strings.ReplaceAll(moduleName, "-", "_")
 }

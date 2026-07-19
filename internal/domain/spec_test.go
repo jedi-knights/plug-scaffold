@@ -7,15 +7,16 @@ import (
 
 func TestNewPluginSpec_Valid(t *testing.T) {
 	tests := []struct {
-		name           string
-		repoName       string
-		wantModuleName string
+		name            string
+		repoName        string
+		wantModuleName  string
+		wantModuleIdent string
 	}{
-		{"bare name", "harpoon", "harpoon"},
-		{"nvim suffix stripped", "harpoon.nvim", "harpoon"},
-		{"kebab preserved", "git-worktree.nvim", "git-worktree"},
-		{"digits allowed", "go-task.nvim", "go-task"},
-		{"no suffix", "telescope", "telescope"},
+		{"bare name", "harpoon", "harpoon", "harpoon"},
+		{"nvim suffix stripped", "harpoon.nvim", "harpoon", "harpoon"},
+		{"kebab preserved in module, snake in ident", "git-worktree.nvim", "git-worktree", "git_worktree"},
+		{"digits allowed", "go-task.nvim", "go-task", "go_task"},
+		{"no suffix", "telescope", "telescope", "telescope"},
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
@@ -25,6 +26,9 @@ func TestNewPluginSpec_Valid(t *testing.T) {
 			}
 			if spec.ModuleName != tc.wantModuleName {
 				t.Errorf("ModuleName = %q, want %q", spec.ModuleName, tc.wantModuleName)
+			}
+			if spec.ModuleIdent != tc.wantModuleIdent {
+				t.Errorf("ModuleIdent = %q, want %q", spec.ModuleIdent, tc.wantModuleIdent)
 			}
 			if spec.RepoName != tc.repoName {
 				t.Errorf("RepoName = %q, want %q (RepoName must be preserved verbatim)", spec.RepoName, tc.repoName)

@@ -1,0 +1,16 @@
+--- :checkhealth {{.Spec.ModuleName}} entry point.
+
+local M = {}
+
+function M.check()
+  vim.health.start("{{.Spec.ModuleName}}")
+
+  local detector = require("{{.Spec.ModuleName}}.detector")
+  if detector.should_load() then
+    vim.health.ok("environment supports {{.Spec.ModuleName}}")
+  else
+    vim.health.warn("{{.Spec.ModuleName}} would not load in this environment (detector.should_load returned false)")
+  end
+end
+
+return M
