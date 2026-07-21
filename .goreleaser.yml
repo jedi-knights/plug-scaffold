@@ -1,0 +1,60 @@
+version: 2
+
+project_name: plug-scaffold
+
+before:
+  hooks:
+    - go mod download
+    - go mod verify
+
+builds:
+  - id: plug-scaffold
+    main: ./cmd/plug-scaffold
+    binary: plug-scaffold
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ignore:
+      # Windows arm64 has no meaningful demand for this tool.
+      - goos: windows
+        goarch: arm64
+    ldflags:
+      - -s -w -X main.version={{.Version}}
+    flags:
+      - -trimpath
+
+archives:
+  - id: plug-scaffold
+    ids: [plug-scaffold]
+    # plug-scaffold_0.1.0_linux_amd64.tar.gz
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    formats: [tar.gz]
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+    files:
+      - README.md
+      - LICENSE
+
+checksum:
+  name_template: checksums.txt
+  algorithm: sha256
+
+# Changelog is managed by go-semantic-release (CHANGELOG.md).
+# GoReleaser's built-in changelog is disabled to avoid duplication.
+changelog:
+  disable: true
+
+release:
+  github:
+    owner: jedi-knights
+    name: plug-scaffold
+  draft: false
+  prerelease: auto
+  name_template: "v{{.Version}}"
