@@ -1,0 +1,30 @@
+describe("{{.Spec.ModuleName}}", function()
+  it("lazy-loads submodules on first access", function()
+    -- Fresh require each test — clear the package cache so the __index
+    -- hook actually fires (subsequent tests would see cached module).
+    package.loaded["{{.Spec.ModuleName}}"] = nil
+    package.loaded["{{.Spec.ModuleName}}.config"] = nil
+
+    local mod = require("{{.Spec.ModuleName}}")
+    assert.is_nil(rawget(mod, "config"))
+    assert.is_table(mod.config)
+    -- After access, the resolved submodule is cached on M directly.
+    assert.is_table(rawget(mod, "config"))
+  end)
+
+  it("exposes a setup function", function()
+    local mod = require("{{.Spec.ModuleName}}")
+    assert.is_function(mod.setup)
+  end)
+
+  it("stores merged config on state", function()
+    local mod = require("{{.Spec.ModuleName}}")
+    mod.setup({ enabled = false })
+    assert.is_false(mod.state.config.enabled)
+  end)
+
+  it("ignores unknown submodules", function()
+    local mod = require("{{.Spec.ModuleName}}")
+    assert.is_nil(mod.does_not_exist)
+  end)
+end)

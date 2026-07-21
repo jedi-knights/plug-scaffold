@@ -1,0 +1,41 @@
+*{{.Spec.ModuleName}}.txt*   Scaffolded with plug-scaffold (style: tj)
+
+Author:  {{.Spec.Author}}
+License: MIT
+
+==============================================================================
+CONTENTS                                          *{{.Spec.ModuleName}}-contents*
+
+  1. Introduction ................ |{{.Spec.ModuleName}}-intro|
+  2. Setup ....................... |{{.Spec.ModuleName}}-setup|
+  3. API ......................... |{{.Spec.ModuleName}}-api|
+  4. Health ...................... |{{.Spec.ModuleName}}-health|
+
+==============================================================================
+1. Introduction                                      *{{.Spec.ModuleName}}-intro*
+
+TODO: describe the plugin.
+
+==============================================================================
+2. Setup                                             *{{.Spec.ModuleName}}-setup*
+
+>lua
+    require("{{.Spec.ModuleName}}").setup({
+      -- your config here
+    })
+<
+
+==============================================================================
+3. API                                                 *{{.Spec.ModuleName}}-api*
+
+Public submodules resolve lazily on first access:
+
+- `require("{{.Spec.ModuleName}}").config`  — defaults and merge helper
+- `require("{{.Spec.ModuleName}}").health`  — |:checkhealth| entry point
+
+==============================================================================
+4. Health                                           *{{.Spec.ModuleName}}-health*
+
+Run `:checkhealth {{.Spec.ModuleName}}` to verify the plugin loaded.
+
+ vim:tw=78:ts=8:ft=help:norl:

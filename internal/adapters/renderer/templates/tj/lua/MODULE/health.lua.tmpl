@@ -1,0 +1,18 @@
+--- :checkhealth {{.Spec.ModuleName}} entry point.
+
+local M = {}
+
+function M.check()
+  vim.health.start("{{.Spec.ModuleName}}")
+  vim.health.ok("{{.Spec.ModuleName}} is loaded")
+
+  -- First-party require — plug-audit's deps/optional-peer exempts it.
+  local mod = require("{{.Spec.ModuleName}}")
+  if mod.state then
+    vim.health.ok("setup() has been called")
+  else
+    vim.health.info('setup() has not been called yet — require("{{.Spec.ModuleName}}").setup({}) to activate')
+  end
+end
+
+return M
