@@ -12,7 +12,16 @@ import (
 	"github.com/jedi-knights/plug-scaffold/internal/adapters/emitter"
 	"github.com/jedi-knights/plug-scaffold/internal/adapters/renderer"
 	"github.com/jedi-knights/plug-scaffold/internal/domain"
+	"github.com/jedi-knights/plug-scaffold/internal/ports"
 )
+
+// styleRenderers maps a Style to its Lua-tree renderer. Base runs
+// unconditionally for every style (LICENSE, README, .gitignore);
+// styleRenderers layers style-specific files on top. Missing styles
+// fail loudly rather than silently degrading to a Base-only tree.
+var styleRenderers = map[domain.Style]ports.Renderer{
+	domain.StyleOmar: renderer.NewOmar(),
+}
 
 // NewNewCmd returns the `plug-scaffold new` command.
 func NewNewCmd() *cobra.Command {
@@ -80,8 +89,16 @@ func runNew(pluginName, author, org, styleName, dir string) error {
 		return fmt.Errorf("checking target %s: %w", target, err)
 	}
 
+	styleRenderer, ok := styleRenderers[spec.Style]
+	if !ok {
+		return fmt.Errorf("style %q not yet implemented in this release (only 'omar' available in v0.1.0)", spec.Style)
+	}
+
 	out := emitter.New(target)
 	if err := renderer.NewBase().Render(spec, out); err != nil {
+		return err
+	}
+	if err := styleRenderer.Render(spec, out); err != nil {
 		return err
 	}
 
