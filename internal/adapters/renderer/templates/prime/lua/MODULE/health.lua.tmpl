@@ -1,0 +1,17 @@
+--- :checkhealth {{.Spec.ModuleName}} entry point.
+
+local M = {}
+
+function M.check()
+  vim.health.start("{{.Spec.ModuleName}}")
+  vim.health.ok("{{.Spec.ModuleName}} is loaded")
+
+  local mod = require("{{.Spec.ModuleName}}")
+  if mod.config then
+    vim.health.ok("setup() has been called")
+  else
+    vim.health.info(':checkhealth {{.Spec.ModuleName}} — call require("{{.Spec.ModuleName}}"):setup({}) to activate')
+  end
+end
+
+return M

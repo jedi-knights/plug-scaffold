@@ -1,0 +1,34 @@
+--- {{.Spec.ModuleName}}: <one-line description here>
+---
+--- Singleton instance exposed via require. Public methods use colon
+--- syntax; state lives on the instance. harpoon2 uses the same shape:
+--- one plugin, one instance, colon-methods carry `self`.
+
+local Config = require("{{.Spec.ModuleName}}.config")
+
+--- @class {{.Spec.ModuleIdent}}
+--- @field config table? Merged config; nil until :setup() is called.
+local {{.Spec.ModuleIdent}} = {}
+{{.Spec.ModuleIdent}}.__index = {{.Spec.ModuleIdent}}
+
+--- Merge opts over defaults and store on the instance. Safe to call
+--- multiple times; last call wins. Returns self for chaining.
+--- @param opts table?
+--- @return {{.Spec.ModuleIdent}}
+function {{.Spec.ModuleIdent}}:setup(opts)
+  self.config = Config.merge(opts or {})
+  return self
+end
+
+--- Toggle the plugin's enabled flag. No-op until :setup() has been
+--- called — mirrors harpoon2's "no work before setup" invariant.
+function {{.Spec.ModuleIdent}}:toggle()
+  if not self.config then
+    return
+  end
+  self.config.enabled = not self.config.enabled
+end
+
+-- Return the singleton instance. Lua's require cache guarantees every
+-- `require("{{.Spec.ModuleName}}")` returns the same table.
+return setmetatable({}, {{.Spec.ModuleIdent}})

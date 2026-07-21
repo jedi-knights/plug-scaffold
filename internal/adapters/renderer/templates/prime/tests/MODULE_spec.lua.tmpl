@@ -1,0 +1,40 @@
+describe("{{.Spec.ModuleName}}", function()
+  local mod
+
+  before_each(function()
+    -- Reset the require cache so each test gets a fresh instance —
+    -- otherwise :setup() state leaks between tests.
+    package.loaded["{{.Spec.ModuleName}}"] = nil
+    package.loaded["{{.Spec.ModuleName}}.config"] = nil
+    mod = require("{{.Spec.ModuleName}}")
+  end)
+
+  it("returns the same instance on repeat requires within a session", function()
+    local a = require("{{.Spec.ModuleName}}")
+    local b = require("{{.Spec.ModuleName}}")
+    assert.are.equal(a, b)
+  end)
+
+  it("exposes setup as a colon-syntax method that returns self", function()
+    assert.is_function(mod.setup)
+    local ret = mod:setup({ enabled = false })
+    assert.are.equal(mod, ret)
+  end)
+
+  it("merges opts over defaults on setup", function()
+    mod:setup({ enabled = false })
+    assert.is_false(mod.config.enabled)
+  end)
+
+  it("toggle flips enabled after setup", function()
+    mod:setup({ enabled = true })
+    mod:toggle()
+    assert.is_false(mod.config.enabled)
+  end)
+
+  it("toggle is a no-op before setup", function()
+    -- No error, no state — the harpoon2 invariant.
+    mod:toggle()
+    assert.is_nil(mod.config)
+  end)
+end)

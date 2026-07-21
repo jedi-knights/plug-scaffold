@@ -1,0 +1,47 @@
+*{{.Spec.ModuleName}}.txt*   Scaffolded with plug-scaffold (style: prime)
+
+Author:  {{.Spec.Author}}
+License: MIT
+
+==============================================================================
+CONTENTS                                          *{{.Spec.ModuleName}}-contents*
+
+  1. Introduction ................ |{{.Spec.ModuleName}}-intro|
+  2. Setup ....................... |{{.Spec.ModuleName}}-setup|
+  3. Keymaps ..................... |{{.Spec.ModuleName}}-keymaps|
+  4. Health ...................... |{{.Spec.ModuleName}}-health|
+
+==============================================================================
+1. Introduction                                      *{{.Spec.ModuleName}}-intro*
+
+TODO: describe the plugin.
+
+==============================================================================
+2. Setup                                             *{{.Spec.ModuleName}}-setup*
+
+>lua
+    require("{{.Spec.ModuleName}}"):setup({
+      -- your config here
+    })
+<
+
+Note the colon: setup is a method on the singleton instance, not a plain
+function on a module table.
+
+==============================================================================
+3. Keymaps                                         *{{.Spec.ModuleName}}-keymaps*
+
+The plugin registers no default keymaps. Suggested user bindings:
+
+>lua
+    local mod = require("{{.Spec.ModuleName}}")
+    vim.keymap.set("n", "<leader>tt", function() mod:toggle() end,
+      { desc = "{{.Spec.ModuleName}}: toggle enabled" })
+<
+
+==============================================================================
+4. Health                                           *{{.Spec.ModuleName}}-health*
+
+Run `:checkhealth {{.Spec.ModuleName}}` to verify the plugin loaded.
+
+ vim:tw=78:ts=8:ft=help:norl:
