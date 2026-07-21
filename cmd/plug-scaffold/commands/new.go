@@ -21,6 +21,7 @@ import (
 // fail loudly rather than silently degrading to a Base-only tree.
 var styleRenderers = map[domain.Style]ports.Renderer{
 	domain.StyleOmar: renderer.NewOmar(),
+	domain.StyleTJ:   renderer.NewTJ(),
 }
 
 // NewNewCmd returns the `plug-scaffold new` command.

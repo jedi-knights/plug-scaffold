@@ -1,0 +1,41 @@
+--- {{.Spec.ModuleName}}: <one-line description here>
+---
+--- Lazy-loading facade. Public submodules resolve on first access via
+--- __index; you never pay for what you don't touch. plenary and
+--- telescope both use this shape to keep `require("...")` cheap.
+
+local M = {}
+
+-- Allowlist of submodules exposed via `require("{{.Spec.ModuleName}}").<name>`.
+-- Add a key here (with value `true`) to expose a new submodule; the
+-- metatable does the lazy require the first time it's read. Values other
+-- than `true` are reserved for future aliasing.
+local submodules = {
+  config = true,
+  health = true,
+}
+
+setmetatable(M, {
+  __index = function(_, k)
+    if not submodules[k] then
+      return nil
+    end
+    -- Dynamic require target — first-party by construction, plug-audit's
+    -- deps/optional-peer skips it because the arg is not a literal.
+    local ok, mod = pcall(require, "{{.Spec.ModuleName}}." .. k)
+    if not ok then
+      error(("{{.Spec.ModuleName}}: failed to load submodule %q: %s"):format(k, mod))
+    end
+    rawset(M, k, mod)
+    return mod
+  end,
+})
+
+--- Set up the plugin. Safe to call multiple times; last call wins.
+--- Stores merged config on M.state so callers can introspect it.
+--- @param opts table? User-supplied config; merged over defaults.
+function M.setup(opts)
+  M.state = { config = M.config.merge(opts or {}) }
+end
+
+return M
