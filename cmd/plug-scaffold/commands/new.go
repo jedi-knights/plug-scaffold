@@ -20,8 +20,9 @@ import (
 // styleRenderers layers style-specific files on top. Missing styles
 // fail loudly rather than silently degrading to a Base-only tree.
 var styleRenderers = map[domain.Style]ports.Renderer{
-	domain.StyleOmar: renderer.NewOmar(),
-	domain.StyleTJ:   renderer.NewTJ(),
+	domain.StyleOmar:  renderer.NewOmar(),
+	domain.StyleTJ:    renderer.NewTJ(),
+	domain.StylePrime: renderer.NewPrime(),
 }
 
 // NewNewCmd returns the `plug-scaffold new` command.
