@@ -6,8 +6,6 @@
 
 Neovim plugin project generator. Emits a fresh plugin skeleton — one directory tree per opinionated style — that passes [`plug-audit`](https://github.com/jedi-knights/plug-audit) cleanly out of the box.
 
-> **Status:** in development — v0.1.0 not yet released.
-
 ## Positioning
 
 `plug-scaffold` is to Neovim plugins what `cargo new` is to Rust crates: an opinionated `new <name>` command that produces a working project on the first commit. Three styles ship in the box, each mirroring a real-world author's conventions:
@@ -76,20 +74,23 @@ Every style emits the same top-level layout — the *contents* of the Lua files 
 ├── LICENSE
 ├── README.md
 ├── .gitignore
-├── Makefile
-├── plugin/<module>.lua          # reload guard + named augroup
+├── Makefile                           # test / lint / format / check targets
+├── neospec.toml                       # neospec CI config: init_file → scripts/minimal_init.lua
+├── .github/workflows/ci.yml           # lint + test + validate; ubuntu-latest
+├── plugin/<module>.lua                # reload guard + named augroup
 ├── lua/<module>/
-│   ├── init.lua                 # style-specific: DI / metatable-lazy / singleton class
-│   ├── config.lua               # defaults + merge helper
-│   └── health.lua               # :checkhealth entry point
-├── doc/<module>.txt             # hand-written vimdoc (tj + prime; omar skips)
-├── tests/<module>_spec.lua      # plenary-busted spec
-└── scripts/minimal_init.lua     # test bootstrap
+│   ├── init.lua                       # style-specific: DI / metatable-lazy / singleton class
+│   ├── config.lua                     # defaults + merge helper
+│   ├── detector.lua                   # (omar only) should_load() gate
+│   └── health.lua                     # :checkhealth entry point
+├── doc/<module>.txt                   # hand-written vimdoc
+├── tests/<module>_spec.lua            # plenary-busted spec
+└── scripts/minimal_init.lua           # test bootstrap
 ```
 
-The `omar` style additionally emits `lua/<module>/detector.lua` for the `should_load()` gate; `tj` and `prime` additionally emit `doc/<module>.txt`.
+## Guarantee
 
-## Ship criterion (v0.1.0)
+Every scaffolded tree passes `plug-audit check .` with zero findings on the first run — no manual cleanup, no post-scaffold reformat, no CI red on the first push:
 
 ```sh
 plug-scaffold new my-thing.nvim --org=<you> --style=<any> && \
@@ -97,6 +98,8 @@ plug-scaffold new my-thing.nvim --org=<you> --style=<any> && \
   plug-audit check .
 # plug-audit: no findings.
 ```
+
+The templates track `plug-audit`'s rules directly. When a rule tightens, the templates update in the same release.
 
 ## Development
 
