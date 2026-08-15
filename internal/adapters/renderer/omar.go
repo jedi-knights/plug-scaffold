@@ -2,7 +2,11 @@ package renderer
 
 import "embed"
 
-//go:embed templates/omar
+// all: prefix opts into embedding files that begin with "." or "_". Required
+// for .github/workflows/ci.yml — without it, embed silently skips the entire
+// .github/ subtree and scaffolded plugins ship without CI.
+//
+//go:embed all:templates/omar
 var omarFS embed.FS
 
 // NewOmar returns a renderer for the omar-style Neovim plugin
