@@ -24,9 +24,12 @@ func TestOmar_Render_EmitsExpectedTree(t *testing.T) {
 		"lua/harpoon/config.lua",
 		"lua/harpoon/detector.lua",
 		"lua/harpoon/health.lua",
+		"doc/harpoon.txt",
 		"tests/harpoon_spec.lua",
 		"scripts/minimal_init.lua",
 		"Makefile",
+		"neospec.toml",
+		".github/workflows/ci.yml",
 	}
 	for _, p := range want {
 		if _, ok := rec.files[p]; !ok {
@@ -107,6 +110,48 @@ func TestOmar_Render_StaticFilesEmittedVerbatim(t *testing.T) {
 	}
 	if strings.Contains(mk, "{{") {
 		t.Errorf("Makefile contains unresolved template markers (should not — non-.tmpl file)")
+	}
+}
+
+func TestOmar_Render_VimdocTagsUseModuleName(t *testing.T) {
+	spec, err := domain.NewPluginSpec("harpoon", "Ada", "jedi-knights", domain.StyleOmar)
+	if err != nil {
+		t.Fatalf("NewPluginSpec: %v", err)
+	}
+	rec := &recorder{}
+	_ = NewOmar().Render(spec, rec)
+
+	doc := string(rec.files["doc/harpoon.txt"])
+	for _, want := range []string{
+		"*harpoon.txt*",
+		"*harpoon-contents*",
+		"vim:tw=78:ts=8:noet:ft=help:norl:",
+	} {
+		if !strings.Contains(doc, want) {
+			t.Errorf("doc/harpoon.txt missing %q, got:\n%s", want, doc)
+		}
+	}
+}
+
+func TestOmar_Render_CIWorkflowPreservesGitHubExprSyntax(t *testing.T) {
+	// .github/workflows/ci.yml is deliberately non-.tmpl so that GitHub
+	// Actions ${{ github.ref }} expressions pass through verbatim rather
+	// than being interpreted as Go template actions. Renaming the file
+	// to .yml.tmpl would break the workflow at CI time — freeze the
+	// verbatim-emit behaviour here.
+	spec, err := domain.NewPluginSpec("harpoon", "Ada", "jedi-knights", domain.StyleOmar)
+	if err != nil {
+		t.Fatalf("NewPluginSpec: %v", err)
+	}
+	rec := &recorder{}
+	_ = NewOmar().Render(spec, rec)
+
+	ci := string(rec.files[".github/workflows/ci.yml"])
+	if !strings.Contains(ci, "${{ github.ref }}") {
+		t.Errorf("ci.yml lost the GitHub Actions expression; may have been template-rendered:\n%s", ci)
+	}
+	if !strings.Contains(ci, "jedi-knights/neospec@v0") {
+		t.Errorf("ci.yml missing neospec action pin, got:\n%s", ci)
 	}
 }
 
