@@ -93,7 +93,7 @@ func runNew(pluginName, author, org, styleName, dir string) error {
 
 	styleRenderer, ok := styleRenderers[spec.Style]
 	if !ok {
-		return fmt.Errorf("style %q not yet implemented in this release (only 'omar' available in v0.1.0)", spec.Style)
+		return fmt.Errorf("style %q is recognized but has no registered renderer", spec.Style)
 	}
 
 	out := emitter.New(target)
